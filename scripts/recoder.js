@@ -5,29 +5,32 @@ var mediaDevices = undefined;
 var mediaRecord = undefined;
 
 var recordButton = undefined;
-var playButton = undefined;
 var stopButton = undefined;
+var playOption = undefined;
 var chunks = [];
 var currentAudioBlob = undefined;
+var soundClips = undefined;
 
 
 function isSupported() {
     return  navigator.mediaDevices.getUserMedia === undefined  ? false  : true;
 }
 
-function initRecoder(playButtton_ , stopButton_ , recordButton_) {
+function getCurrentAudio() {
+    return currentAudioBlob;
+}
+
+function initRecoder(stopButton_ , recordButton_ , soundClips_  = undefined) {
     if(isSupported() === false) {
         alert("Recording not suppoted");
         return;
     }
 
     recordButton = recordButton_;
-    playButton = playButtton_;
     stopButton = stopButton_;
-
+    soundClips = soundClips_;
     navigator.mediaDevices.getUserMedia(constrains).then(initMicrophone , onMicrophoneError);
 
-    playButton.disabled = false;
     stopButton.disabled = true;
 }
 
@@ -52,7 +55,6 @@ function initMicrophone(stream) {
         recordButton.css("color" , "black");
         recordButton.prop("disabled" , false)
         stopButton.prop("disabled" ,  true)
-
     });
 
     mediaRecord.ondataavailable = function(event) {
@@ -61,11 +63,42 @@ function initMicrophone(stream) {
         console.log(chunks);
     }
 
-        mediaRecord.onstop = function(event) {
+    mediaRecord.onstop = function(event) {
         console.log(chunks);
-        currentAudioBlob = new Blob(chunks , { "type" : "audio/ogg;codecs=opus" });
+        currentAudioBlob = new Blob(chunks , { "type" : "audio/ogg; codecs=opus" });
         console.log(currentAudioBlob);
         chunks = [];
+
+        const audio = document.createElement("audio");
+        audio.setAttribute("controls" , "");
+        audio.control = true;
+        const audioURL = window.URL.createObjectURL(currentAudioBlob);
+        audio.src = audioURL;
+        console.log(audio);
+
+
+        if(soundClips === undefined)
+            return;
+
+        const deleteButton = document.createElement("button");
+        deleteButton.textContent = "Delete";
+        deleteButton.className = "delete";
+
+        deleteButton.onclick = function(event) {
+            let eventTarget = event.target;
+            eventTarget.parentNode.parentNode.removeChild(eventTarget.parentNode);
+        }
+
+
+        const clipContainer = document.createElement("article");
+        clipContainer.classList.add("clip");
+        const clipLabel = document.createElement("p");
+        clipLabel.textContent = soundClips.children().length;
+        clipContainer.appendChild(audio);
+        clipContainer.appendChild(clipLabel);
+        clipContainer.appendChild(deleteButton);
+        soundClips.append(clipContainer);
+
     }
 }
 
