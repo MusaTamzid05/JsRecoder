@@ -6,7 +6,7 @@ var mediaRecord = undefined;
 
 var recordButton = undefined;
 var stopButton = undefined;
-var playOption = undefined;
+var sendButton = undefined;
 var chunks = [];
 var currentAudioBlob = undefined;
 var soundClips = undefined;
@@ -20,7 +20,7 @@ function getCurrentAudio() {
     return currentAudioBlob;
 }
 
-function initRecoder(stopButton_ , recordButton_ , soundClips_  = undefined) {
+function initRecoder(stopButton_ , recordButton_ , sendButton_ ,  soundClips_  = undefined) {
     if(isSupported() === false) {
         alert("Recording not suppoted");
         return;
@@ -29,6 +29,8 @@ function initRecoder(stopButton_ , recordButton_ , soundClips_  = undefined) {
     recordButton = recordButton_;
     stopButton = stopButton_;
     soundClips = soundClips_;
+    sendButton = sendButton_;
+
     navigator.mediaDevices.getUserMedia(constrains).then(initMicrophone , onMicrophoneError);
 
     stopButton.disabled = true;
@@ -57,6 +59,24 @@ function initMicrophone(stream) {
         stopButton.prop("disabled" ,  true)
     });
 
+    sendButton.click(function() {
+
+        event.preventDefault();
+        let fd = new FormData();
+        fd.append("fname" , "test.wav");
+        fd.append("data" , currentAudioBlob);
+
+        $.ajax({
+            type : "POST",
+            url : "/audio_process",
+            data : fd,
+            processData : false,
+            contentType : false
+        }).done(function(data) {
+            alert(data);
+        })
+    });
+
     mediaRecord.ondataavailable = function(event) {
         console.log("Recoding complete");
         chunks.push(event.data);
@@ -65,7 +85,7 @@ function initMicrophone(stream) {
 
     mediaRecord.onstop = function(event) {
         console.log(chunks);
-        currentAudioBlob = new Blob(chunks , { "type" : "audio/ogg; codecs=opus" });
+        currentAudioBlob = new Blob(chunks , { "type" : "audio/wav" });
         console.log(currentAudioBlob);
         chunks = [];
 
