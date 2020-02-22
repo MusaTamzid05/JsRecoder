@@ -23,13 +23,21 @@ function initRecoder(playButtton_ , stopButton_ , recordButton_) {
     stopButton = stopButton_;
 
     navigator.mediaDevices.getUserMedia(constrains).then(initMicrophone , onMicrophoneError);
+
+    playButton.disabled = true;
+    stopButton.disabled = true;
 }
 
 function initMicrophone(stream) {
     mediaRecord = new MediaRecorder(stream);
 
     recordButton.click(function() {
-        alert("Record button clicked");
+        mediaRecord.start();
+        console.log(mediaRecord.state);
+        recordButton.css("color" , "red");
+        recordButton.prop("disabled" , true)
+        stopButton.prop("disabled" ,  false)
+
     });
 
     playButton.click(function() {
@@ -37,7 +45,15 @@ function initMicrophone(stream) {
     });
 
     stopButton.click(function() {
-        alert("Stop button clicked");
+        mediaRecord.stop();
+        console.log(mediaRecord.state);
+        recordButton.disabled = false;
+        stopButton.disabled = true;
+
+        recordButton.css("color" , "black");
+        recordButton.prop("disabled" , false)
+        stopButton.prop("disabled" ,  true)
+
     });
 
 }
