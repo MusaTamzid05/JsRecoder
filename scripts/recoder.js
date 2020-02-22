@@ -1,31 +1,35 @@
 
 
-class Recoder {
+var constrains = { audio : true };
+var mediaDevices = undefined;
+var mediaRecord = undefined;
 
-    constructor() {
-        this.supported = navigator.mediaDevices.getUserMedia;
+var recordButton = undefined;
 
-        if(this.supported === false) {
-            alert("Media device not supported");
-        }
-
-        console.log("Recoder supported!!");
-    }
-
-    initMicrophone(stream) {
-        this.media_record = new MediaRecorder(stream);
-        this.constrains = { audio : true };
-    }
-
-    record() {
-
-    }
-
-    play() {
-
-    }
-
-    stopRecording() {
-
-    }
+function isSupported() {
+    return  navigator.mediaDevices.getUserMedia === undefined  ? false  : true;
 }
+
+function initRecoder(recordButton_) {
+    if(isSupported() === false) {
+        alert("Recording not suppoted");
+        return;
+    }
+
+    recordButton = recordButton_;
+    navigator.mediaDevices.getUserMedia(constrains).then(initMicrophone , onMicrophoneError);
+}
+
+function initMicrophone(stream) {
+    mediaRecord = new MediaRecorder(stream);
+
+    recordButton.click(function() {
+        alert("Record button clicked");
+    });
+
+}
+
+function onMicrophoneError(err) {
+    alert(err);
+}
+

@@ -2,7 +2,9 @@
 
 $(document).ready(function() {
 
-    let recoder = new Recoder();
+    let recordButton = $("#record");
+    let userMedia = navigator.mediaDevices.getUserMedia;
+    initRecoder(recordButton);
 });
 
 
