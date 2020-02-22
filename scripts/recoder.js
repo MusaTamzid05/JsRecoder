@@ -7,6 +7,9 @@ var mediaRecord = undefined;
 var recordButton = undefined;
 var playButton = undefined;
 var stopButton = undefined;
+var chunks = [];
+var currentAudioBlob = undefined;
+
 
 function isSupported() {
     return  navigator.mediaDevices.getUserMedia === undefined  ? false  : true;
@@ -24,7 +27,7 @@ function initRecoder(playButtton_ , stopButton_ , recordButton_) {
 
     navigator.mediaDevices.getUserMedia(constrains).then(initMicrophone , onMicrophoneError);
 
-    playButton.disabled = true;
+    playButton.disabled = false;
     stopButton.disabled = true;
 }
 
@@ -40,10 +43,6 @@ function initMicrophone(stream) {
 
     });
 
-    playButton.click(function() {
-        alert("Play button clicked");
-    });
-
     stopButton.click(function() {
         mediaRecord.stop();
         console.log(mediaRecord.state);
@@ -56,6 +55,18 @@ function initMicrophone(stream) {
 
     });
 
+    mediaRecord.ondataavailable = function(event) {
+        console.log("Recoding complete");
+        chunks.push(event.data);
+        console.log(chunks);
+    }
+
+        mediaRecord.onstop = function(event) {
+        console.log(chunks);
+        currentAudioBlob = new Blob(chunks , { "type" : "audio/ogg;codecs=opus" });
+        console.log(currentAudioBlob);
+        chunks = [];
+    }
 }
 
 function onMicrophoneError(err) {
