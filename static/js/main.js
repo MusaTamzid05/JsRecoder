@@ -7,7 +7,6 @@ $(document).ready(function() {
     let sendButton = $("#send");
     let soundClips = $(".sound-clips");
 
-    let userMedia = navigator.mediaDevices.getUserMedia;
     initRecoder(stopButton , recordButton , sendButton , soundClips);
 });
 
