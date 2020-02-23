@@ -14,25 +14,10 @@ def index():
 @app.route("/audio_process" , methods = ["POST"])
 def process_audio():
 
-    print("Process request send")
-    with open("test.wav" , "wb") as f:
-        chunk_size = 4096
-        data = None
+    with open("./test.wav" , 'wb') as f:
+        f.write(request.data)
 
-        while True:
-            chunk = request.stream.read(chunk_size)
-            if len(chunk) == 0:
-                write_data(data)
-                return jsonify({"response" : True})
-
-            if data == None:
-                data = chunk
-            else:
-                data += chunk
-
-            f.write(chunk)
-
-    return jsonify({"response" : False})
+    return jsonify({"response" : True})
 
 
 if __name__ == "__main__":

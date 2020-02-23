@@ -61,20 +61,13 @@ function initMicrophone(stream) {
 
     sendButton.click(function() {
 
-        event.preventDefault();
-        let fd = new FormData();
-        fd.append("fname" , "test.wav");
-        fd.append("data" , currentAudioBlob);
-
-        $.ajax({
-            type : "POST",
-            url : "/audio_process",
-            data : fd,
-            processData : false,
-            contentType : false
-        }).done(function(data) {
-            alert(data);
-        })
+        fetch("/audio_process" , {"method" : "POST" , "body" : currentAudioBlob})
+            .then(response => {
+                alert("We have a response")
+            })
+            .catch(err => {
+                alert("Error in responose");
+            });
     });
 
     mediaRecord.ondataavailable = function(event) {
