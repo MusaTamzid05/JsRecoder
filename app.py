@@ -3,7 +3,6 @@ from flask import request
 from flask import render_template
 from flask import jsonify
 
-from util import write_data
 
 app = Flask(__name__)
 
