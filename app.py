@@ -2,7 +2,9 @@ from flask import Flask
 from flask import request
 from flask import render_template
 from flask import jsonify
+import os
 
+from util import clean_wave
 
 app = Flask(__name__)
 
@@ -12,9 +14,17 @@ def index():
 
 @app.route("/audio_process" , methods = ["POST"])
 def process_audio():
+    temp_audio_path = "./temp.wav"
+    clean_audio_path = "./clean.wav"
 
-    with open("./test.wav" , 'wb') as f:
+    if os.path.isfile(clean_audio_path):
+        os.remove(clean_audio_path)
+
+    with open(temp_audio_path , 'wb') as f:
         f.write(request.data)
+
+    clean_wave(temp_audio_path , clean_audio_path)
+    os.remove(temp_audio_path)
 
     return jsonify({"response" : True})
 
